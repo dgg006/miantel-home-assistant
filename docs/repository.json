@@ -1,0 +1,13 @@
+{
+  "full_name": "dgg006/miantel-home-assistant",
+  "description": "Integración en español de MiAntel para Home Assistant y HACS: saldos, consumo de datos y facturación de servicios de Antel Uruguay.",
+  "topics": [
+    "home-assistant",
+    "hacs",
+    "miantel",
+    "antel",
+    "uruguay",
+    "custom-integration"
+  ],
+  "has_issues": true
+}

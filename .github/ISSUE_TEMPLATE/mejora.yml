@@ -1,0 +1,17 @@
+name: Proponer una mejora
+description: Sugerir funciones para la integración de Antel Uruguay.
+title: '[Mejora] '
+body:
+  - type: textarea
+    id: necesidad
+    attributes:
+      label: Qué necesitás resolver
+      description: Describí la situación con ejemplos ficticios y sin datos de tu cuenta.
+    validations:
+      required: true
+  - type: textarea
+    id: propuesta
+    attributes:
+      label: Cómo te gustaría que funcionara
+    validations:
+      required: true

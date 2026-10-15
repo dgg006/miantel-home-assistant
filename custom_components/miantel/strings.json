@@ -1,0 +1,279 @@
+{
+  "title": "MiAntel",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Conectar con TuID",
+        "data": {
+          "username": "Usuario de TuID",
+          "password": "Contraseña"
+        },
+        "description": "Ingresá las credenciales de TuID. Si TuID exige un código adicional, este método todavía no permite completarlo."
+      },
+      "reauth_confirm": {
+        "title": "Volver a iniciar sesión",
+        "data": {
+          "username": "Usuario de TuID",
+          "password": "Contraseña"
+        },
+        "description": "Ingresá las credenciales de TuID. Si TuID exige un código adicional, este método todavía no permite completarlo."
+      },
+      "services": {
+        "title": "Seleccionar servicios",
+        "data": {
+          "services": "Servicios"
+        }
+      }
+    },
+    "error": {
+      "no_services": "No se encontraron servicios compatibles.",
+      "additional_auth": "TuID requiere un paso adicional. No se puede completar con esta versión.",
+      "invalid_auth": "TuID no aceptó el acceso.",
+      "rate_limited": "MiAntel limitó las consultas. Esperá antes de volver a intentar.",
+      "cannot_connect": "No se pudo conectar con MiAntel.",
+      "unsupported_response": "El formato de MiAntel no es compatible.",
+      "select_service": "Seleccioná al menos un servicio."
+    },
+    "abort": {
+      "already_configured": "La cuenta ya está configurada.",
+      "reauth_successful": "Acceso actualizado.",
+      "wrong_account": "Usá la misma cuenta."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "MiAntel",
+        "data": {
+          "services": "Servicios",
+          "scan_interval_minutes": "Intervalo de actualización (minutos)",
+          "include_history": "Consultar última factura emitida (más solicitudes)",
+          "manage_groups": "Agrupar fibra y teléfono"
+        }
+      },
+      "groups": {
+        "title": "Agrupar servicios",
+        "description": "Agrupaciones configuradas: {count}. Podés reunir fibra y teléfono y elegir si su factura es compartida. No se suman importes.",
+        "menu_options": {
+          "add_group": "Crear agrupación",
+          "remove_group": "Deshacer agrupación",
+          "finish": "Guardar y terminar",
+          "edit_group": "Editar nombre o facturación"
+        }
+      },
+      "add_group": {
+        "title": "Crear agrupación",
+        "data": {
+          "group_name": "Nombre del dispositivo",
+          "internet_service": "Servicio de fibra",
+          "telephone_service": "Teléfono fijo",
+          "billing_source": "Facturación"
+        },
+        "description": "Elegí los servicios que querés mostrar juntos. Si comparten factura, elegí desde qué servicio se consulta en MiAntel. Podrás cambiarlo después."
+      },
+      "remove_group": {
+        "title": "Deshacer agrupación",
+        "data": {
+          "groups_to_remove": "Agrupaciones que querés deshacer"
+        }
+      },
+      "edit_group": {
+        "title": "Editar agrupación",
+        "data": {
+          "group_id": "Agrupación"
+        }
+      },
+      "group_settings": {
+        "title": "Nombre y facturación",
+        "data": {
+          "group_name": "Nombre del dispositivo",
+          "billing_source": "Facturación"
+        },
+        "description": "Para una factura compartida, elegí el servicio desde el que MiAntel permite consultarla. Se mostrará una sola facturación, sin sumar importes. Si falla esa consulta, no se reemplaza con la del otro servicio."
+      }
+    },
+    "error": {
+      "select_service": "Seleccioná al menos un servicio.",
+      "invalid_group": "Revisá los servicios, el nombre y la opción de facturación.",
+      "select_group": "Seleccioná al menos una agrupación."
+    },
+    "abort": {
+      "not_loaded": "La integración debe estar cargada para editar los servicios."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "balance": {
+        "name": "Saldo"
+      },
+      "usage_gib": {
+        "name": "Consumo de datos"
+      },
+      "allowance_gib": {
+        "name": "Datos incluidos"
+      },
+      "balance_expiry": {
+        "name": "Vencimiento del saldo"
+      },
+      "plan": {
+        "name": "Plan"
+      },
+      "billing_status": {
+        "name": "Estado de facturación",
+        "state": {
+          "not_applicable": "No corresponde",
+          "no_pending": "Sin facturas pendientes",
+          "pending": "Con facturas pendientes",
+          "unavailable": "No disponible",
+          "unknown": "Desconocido"
+        }
+      },
+      "pending_count": {
+        "name": "Cantidad de facturas pendientes"
+      },
+      "pending_amount": {
+        "name": "Importe pendiente"
+      },
+      "next_due": {
+        "name": "Próximo vencimiento"
+      },
+      "last_amount": {
+        "name": "Importe de la última factura"
+      },
+      "last_date": {
+        "name": "Fecha de la última factura"
+      },
+      "internet_balance": {
+        "name": "Fibra · Saldo"
+      },
+      "internet_usage_gib": {
+        "name": "Fibra · Consumo de datos"
+      },
+      "internet_allowance_gib": {
+        "name": "Fibra · Datos incluidos"
+      },
+      "internet_balance_expiry": {
+        "name": "Fibra · Vencimiento del saldo"
+      },
+      "internet_plan": {
+        "name": "Fibra · Plan"
+      },
+      "internet_billing_status": {
+        "name": "Fibra · Estado de facturación",
+        "state": {
+          "not_applicable": "No corresponde",
+          "no_pending": "Sin facturas pendientes",
+          "pending": "Con facturas pendientes",
+          "unavailable": "No disponible",
+          "unknown": "Desconocido"
+        }
+      },
+      "internet_pending_count": {
+        "name": "Fibra · Cantidad de facturas pendientes"
+      },
+      "internet_pending_amount": {
+        "name": "Fibra · Importe pendiente"
+      },
+      "internet_next_due": {
+        "name": "Fibra · Próximo vencimiento"
+      },
+      "internet_last_amount": {
+        "name": "Fibra · Importe de la última factura"
+      },
+      "internet_last_date": {
+        "name": "Fibra · Fecha de la última factura"
+      },
+      "telephone_balance": {
+        "name": "Teléfono · Saldo"
+      },
+      "telephone_usage_gib": {
+        "name": "Teléfono · Consumo de datos"
+      },
+      "telephone_allowance_gib": {
+        "name": "Teléfono · Datos incluidos"
+      },
+      "telephone_balance_expiry": {
+        "name": "Teléfono · Vencimiento del saldo"
+      },
+      "telephone_plan": {
+        "name": "Teléfono · Plan"
+      },
+      "telephone_billing_status": {
+        "name": "Teléfono · Estado de facturación",
+        "state": {
+          "not_applicable": "No corresponde",
+          "no_pending": "Sin facturas pendientes",
+          "pending": "Con facturas pendientes",
+          "unavailable": "No disponible",
+          "unknown": "Desconocido"
+        }
+      },
+      "telephone_pending_count": {
+        "name": "Teléfono · Cantidad de facturas pendientes"
+      },
+      "telephone_pending_amount": {
+        "name": "Teléfono · Importe pendiente"
+      },
+      "telephone_next_due": {
+        "name": "Teléfono · Próximo vencimiento"
+      },
+      "telephone_last_amount": {
+        "name": "Teléfono · Importe de la última factura"
+      },
+      "telephone_last_date": {
+        "name": "Teléfono · Fecha de la última factura"
+      },
+      "shared_billing_status": {
+        "name": "Facturación · Estado de facturación",
+        "state": {
+          "not_applicable": "No corresponde",
+          "no_pending": "Sin facturas pendientes",
+          "pending": "Con facturas pendientes",
+          "unavailable": "No disponible",
+          "unknown": "Desconocido"
+        }
+      },
+      "shared_pending_count": {
+        "name": "Facturación · Cantidad de facturas pendientes"
+      },
+      "shared_pending_amount": {
+        "name": "Facturación · Importe pendiente"
+      },
+      "shared_next_due": {
+        "name": "Facturación · Próximo vencimiento"
+      },
+      "shared_last_amount": {
+        "name": "Facturación · Importe de la última factura"
+      },
+      "shared_last_date": {
+        "name": "Facturación · Fecha de la última factura"
+      }
+    },
+    "binary_sensor": {
+      "pending": {
+        "name": "Facturas pendientes"
+      },
+      "overdue": {
+        "name": "Facturas vencidas"
+      },
+      "internet_pending": {
+        "name": "Fibra · Facturas pendientes"
+      },
+      "internet_overdue": {
+        "name": "Fibra · Facturas vencidas"
+      },
+      "telephone_pending": {
+        "name": "Teléfono · Facturas pendientes"
+      },
+      "telephone_overdue": {
+        "name": "Teléfono · Facturas vencidas"
+      },
+      "shared_pending": {
+        "name": "Facturación · Facturas pendientes"
+      },
+      "shared_overdue": {
+        "name": "Facturación · Facturas vencidas"
+      }
+    }
+  }
+}

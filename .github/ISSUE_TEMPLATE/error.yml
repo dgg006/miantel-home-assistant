@@ -1,0 +1,48 @@
+name: Informar un problema
+description: Reportar un error de MiAntel para Antel Uruguay.
+title: '[Error] '
+body:
+  - type: markdown
+    attributes:
+      value: Describí el problema sin compartir credenciales, tokens, números de cuenta o servicios, facturas ni capturas con datos personales.
+  - type: input
+    id: version-integracion
+    attributes:
+      label: Versión de MiAntel
+      description: La versión de esta integración, no la de la aplicación Android.
+    validations:
+      required: true
+  - type: input
+    id: version-ha
+    attributes:
+      label: Versión de Home Assistant
+    validations:
+      required: true
+  - type: dropdown
+    id: instalacion
+    attributes:
+      label: Forma de instalación
+      options:
+        - HACS
+        - Manual
+    validations:
+      required: true
+  - type: textarea
+    id: problema
+    attributes:
+      label: Qué ocurrió
+      description: Contá qué esperabas y qué mostró la integración, usando ejemplos ficticios.
+    validations:
+      required: true
+  - type: textarea
+    id: pasos
+    attributes:
+      label: Cómo reproducirlo
+    validations:
+      required: true
+  - type: textarea
+    id: registros
+    attributes:
+      label: Mensajes relevantes
+      description: Incluí únicamente el fragmento necesario, después de quitar cualquier dato personal.
+      render: text

@@ -1,0 +1,22 @@
+name: Pruebas y paquetes
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  client:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - name: Preparar dependencias
+        run: python -m pip install -r requirements-dev.txt
+      - name: Revisar código
+        run: python -m ruff check .
+      - name: Ejecutar pruebas
+        run: python -m pytest -q
+      - name: Revisar archivos publicables y enlaces
+        run: python tools/audit_public.py --release
+      - name: Preparar paquetes de instalación y código
+        run: python tools/build_release.py

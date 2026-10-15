@@ -1,0 +1,16 @@
+{
+  "domain": "miantel",
+  "name": "MiAntel",
+  "codeowners": [
+    "@dgg006"
+  ],
+  "config_flow": true,
+  "documentation": "https://github.com/dgg006/miantel-home-assistant",
+  "integration_type": "hub",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/dgg006/miantel-home-assistant/issues",
+  "requirements": [
+    "lxml==6.1.2"
+  ],
+  "version": "0.1.0-beta.4"
+}

@@ -1,0 +1,40 @@
+name: Preparar versión
+on:
+  push:
+    tags:
+      - 'v*'
+permissions:
+  contents: read
+jobs:
+  borrador:
+    name: Preparar borrador para revisión
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.14'
+      - name: Preparar dependencias
+        run: python -m pip install -r requirements-dev.txt
+      - name: Comprobar etiqueta y versión
+        run: python tools/check_version.py "$GITHUB_REF_NAME"
+      - name: Ejecutar pruebas y revisión
+        run: |
+          python -m ruff check .
+          python -m pytest -q
+          python tools/audit_public.py --release
+      - name: Crear archivos de instalación
+        run: python tools/build_release.py
+      - name: Crear borrador con notas en español
+        uses: softprops/action-gh-release@v2
+        with:
+          name: MiAntel · Antel Uruguay · ${{ github.ref_name }}
+          body_path: docs/notas-version.md
+          draft: true
+          prerelease: ${{ contains(github.ref_name, 'beta') }}
+          fail_on_unmatched_files: true
+          files: |
+            dist/miantel-*-install.zip
+            dist/miantel-*-source.zip

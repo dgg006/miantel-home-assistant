@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="44" viewBox="0 0 300 44" role="img" aria-labelledby="title">
+  <title id="title">Agregar repositorio a HACS</title>
+  <rect width="300" height="44" rx="8" fill="#15315c"/>
+  <path d="M8 0h48v44H8a8 8 0 0 1-8-8V8a8 8 0 0 1 8-8Z" fill="#00a3cc"/>
+  <path d="M28 13v18M19 22h18" stroke="white" stroke-width="3" stroke-linecap="round"/>
+  <text x="178" y="27" text-anchor="middle" fill="white" font-family="Arial,Helvetica,sans-serif" font-size="15" font-weight="600">Agregar repositorio a HACS</text>
+</svg>
