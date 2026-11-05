@@ -4,7 +4,7 @@
 
 Integración comunitaria para consultar en **Home Assistant los servicios de Antel Uruguay** mediante MiAntel: saldos de líneas móviles, consumo de internet e información de facturación, según los datos disponibles en cada servicio. Toda la interfaz está en español, incluido español latinoamericano.
 
-**Versión estable 0.1.0.** Es un proyecto independiente, sin afiliación con Antel. Solo consulta información: no realiza pagos, recargas ni cambios de servicios.
+**Versión estable 0.1.1.** Es un proyecto independiente, sin afiliación con Antel. Solo consulta información: no realiza pagos, recargas ni cambios de servicios.
 
 <!-- HACS:BEGIN -->
 [![Agregar repositorio a HACS](docs/agregar-a-hacs.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=dgg006&repository=miantel-home-assistant&category=integration)
@@ -34,7 +34,7 @@ No necesitás un emulador, el APK de MiAntel ni un token de Home Assistant para 
 
 Buscá **MiAntel** en HACS. Si aparece en el catálogo, abrí **MiAntel (Antel Uruguay)**, descargá la integración y reiniciá Home Assistant. Después seguí desde el paso 4 de abajo.
 
-La solicitud de inclusión en el catálogo está pendiente de revisión. Mientras tanto, o si tu instancia todavía no la muestra, usá el repositorio personalizado:
+MiAntel fue incorporada al catálogo de HACS el 5 de noviembre de 2026. Si tu instancia todavía no la muestra, también podés usar el repositorio personalizado:
 
 1. Presioná **Agregar repositorio a HACS**, arriba. Si My Home Assistant lo solicita, indicá la dirección de tu instalación de Home Assistant.
 2. Confirmá el agregado del repositorio personalizado de tipo **Integración**.
@@ -112,4 +112,4 @@ Los reportes de errores y las propuestas de mejora se reciben en la sección **I
 
 Para colaborar: [desarrollo y pruebas](docs/desarrollo.md), [protocolo y decisiones de diseño](docs/protocol.md) y [preparación de publicaciones](docs/publicacion.md).
 
-El código usa licencia MIT. El ícono y las marcas MiAntel y Antel pertenecen a sus titulares; consultá la [atribución de la imagen](docs/brand.md).
+El código y el nuevo ícono propio se distribuyen bajo licencia MIT. Las marcas MiAntel y Antel pertenecen a sus titulares; consultá la [información del ícono](docs/brand.md).

@@ -19,7 +19,10 @@ TOP_FILES = {
 FOLDERS = {"custom_components", "tests", "tools", "docs", ".github"}
 SKIP = {"__pycache__", ".pytest_cache", ".ruff_cache", ".git", "dist", ".venv"}
 EXTENSIONS = {".py", ".json", ".html", ".md", ".yml", ".yaml", ".toml", ".txt"}
-BRAND_IMAGES = {"custom_components/miantel/brand/icon.png"}
+BRAND_IMAGES = {
+    "custom_components/miantel/brand/icon.png",
+    "custom_components/miantel/brand/icon@2x.png",
+}
 TEXT_ASSETS = {"docs/agregar-a-hacs.svg"}
 
 

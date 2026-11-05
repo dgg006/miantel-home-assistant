@@ -1,5 +1,9 @@
 # Cambios
 
+## 0.1.1 — 2026-11-05
+
+Nuevo ícono propio con mapa de Uruguay y servicios conectados, en tamaños normal y de alta resolución. Reemplaza el ícono extraído de la aplicación Android. Documentación actualizada para instalar buscando MiAntel en el catálogo de HACS, donde ya fue aprobada. Sin cambios en las consultas, configuración ni entidades.
+
 ## 0.1.0 — 2026-11-05
 
 Primera versión estable, con el mismo funcionamiento de 0.1.0-beta.4. Publicada tras aproximadamente tres semanas de uso sin problemas reportados en una instalación. Documentación actualizada y 85 pruebas automáticas con datos ficticios. La versión se publica sin la marca de prelanzamiento para permitir su instalación normal desde HACS.
