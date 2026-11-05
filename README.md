@@ -4,7 +4,7 @@
 
 Integración comunitaria para consultar en **Home Assistant los servicios de Antel Uruguay** mediante MiAntel: saldos de líneas móviles, consumo de internet e información de facturación, según los datos disponibles en cada servicio. Toda la interfaz está en español, incluido español latinoamericano.
 
-**Versión beta.** Es un proyecto independiente, sin afiliación con Antel. Solo consulta información: no realiza pagos, recargas ni cambios de servicios.
+**Versión estable 0.1.0.** Es un proyecto independiente, sin afiliación con Antel. Solo consulta información: no realiza pagos, recargas ni cambios de servicios.
 
 <!-- HACS:BEGIN -->
 [![Agregar repositorio a HACS](docs/agregar-a-hacs.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=dgg006&repository=miantel-home-assistant&category=integration)
@@ -96,11 +96,11 @@ Si TuID pide SMS u otra verificación adicional, esta versión se detiene y requ
 
 El componente no registra credenciales, cookies ni páginas completas. Sus diagnósticos incluyen únicamente versión, opciones generales y estado de actualización; excluyen cuentas, números de servicios, alias e importes. No envía diagnósticos ni archivos a terceros. Los ejemplos y pruebas del repositorio utilizan datos ficticios.
 
-## Actualizaciones y límites de la beta
+## Actualizaciones y límites
 
 HACS permite descargar las actualizaciones cuando estén disponibles. Después de actualizar, reiniciá Home Assistant. Las versiones experimentales se identifican como beta.
 
-- Se comprobaron la instalación y las lecturas en Home Assistant 2026.10.1, los nombres en español y las pantallas de configuración de agrupaciones y factura compartida. Las pruebas prolongadas y con más cuentas siguen pendientes.
+- Se comprobaron la instalación y las lecturas en Home Assistant 2026.10.1, los nombres en español y las pantallas de configuración de agrupaciones y factura compartida. Al publicar la versión estable, se informó aproximadamente tres semanas de uso sin problemas en una instalación. La validación con más cuentas sigue pendiente.
 - Las páginas internas de MiAntel pueden cambiar sin aviso. Los formatos desconocidos se informan como desconocidos o no disponibles.
 - Las facturas pendientes y vencidas tienen cobertura de pruebas con ejemplos ficticios; hace falta validar más formatos reales.
 - En los formatos investigados, los tamaños que el sitio etiqueta como GB usan una convención binaria; las entidades usan GiB. Esta equivalencia debe revisarse ante servicios o formatos nuevos.
