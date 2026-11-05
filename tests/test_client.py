@@ -9,6 +9,7 @@ from web.errors import (
     ConnectionError,
     ParseError,
     RateLimited,
+    SessionExpired,
 )
 from web.models import BillingStatus
 
@@ -132,6 +133,36 @@ def test_wrong_password_is_not_submitted_repeatedly():
     with pytest.raises(AuthenticationError):
         MiAntelClient("demo-user", "demo-password", transport=transport).login()
     assert sum(bool(fields and "password" in fields) for _, fields, _ in transport.calls) == 1
+
+
+def test_rejected_login_during_refresh_stops_after_one_attempt():
+    transport = FakeTransport([
+        SessionExpired("Expired"),
+        Page(IDP + "username", USER),
+        Page(IDP + "password", PASSWORD),
+        SessionExpired("Rejected"),
+    ])
+    with pytest.raises(AuthenticationError):
+        MiAntelClient("demo-user", "demo-password", transport=transport).fetch()
+    assert not transport.pages
+    assert sum(bool(fields and "password" in fields) for _, fields, _ in transport.calls) == 1
+
+
+def test_login_connection_failure_remains_retryable():
+    transport = FakeTransport([SessionExpired("Expired"), ConnectionError("Offline")])
+    with pytest.raises(ConnectionError):
+        MiAntelClient("demo-user", "demo-password", transport=transport).fetch()
+    assert len(transport.calls) == 2
+
+
+def test_session_expiring_again_after_login_does_not_loop():
+    transport = FakeTransport([
+        SessionExpired("Expired"), *login_pages(), SessionExpired("Expired again")
+    ])
+    with pytest.raises(AuthenticationError):
+        MiAntelClient("demo-user", "demo-password", transport=transport).fetch()
+    assert transport.clears == 1
+    assert not transport.pages
 
 
 def test_sms_step_is_not_automatically_submitted():

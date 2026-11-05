@@ -32,6 +32,10 @@ No necesitás un emulador, el APK de MiAntel ni un token de Home Assistant para 
 
 ## Instalar desde HACS
 
+Buscá **MiAntel** en HACS. Si aparece en el catálogo, abrí **MiAntel (Antel Uruguay)**, descargá la integración y reiniciá Home Assistant. Después seguí desde el paso 4 de abajo.
+
+La solicitud de inclusión en el catálogo está pendiente de revisión. Mientras tanto, o si tu instancia todavía no la muestra, usá el repositorio personalizado:
+
 1. Presioná **Agregar repositorio a HACS**, arriba. Si My Home Assistant lo solicita, indicá la dirección de tu instalación de Home Assistant.
 2. Confirmá el agregado del repositorio personalizado de tipo **Integración**.
 3. Descargá **MiAntel (Antel Uruguay)** desde HACS y reiniciá Home Assistant.
@@ -85,6 +89,8 @@ Las automatizaciones dirigidas al dispositivo pueden necesitar que elijas el dis
 ## Inicio de sesión y privacidad
 
 La integración usa el acceso normal de MiAntel web mediante TuID. Las cookies permanecen en memoria y la sesión se vuelve a iniciar si vence. Las credenciales se guardan en la configuración local de Home Assistant para permitir ese ingreso.
+
+Si se rechazan las credenciales, Home Assistant solicita volver a autenticarse. Ingresá la misma cuenta y su contraseña actual en el aviso de MiAntel; se conservan los servicios seleccionados y las opciones. Los errores de conexión se reintentan como problemas temporales, sin pedir otra contraseña. Un intento de recuperar la sesión no envía repetidamente la contraseña.
 
 Si TuID pide SMS u otra verificación adicional, esta versión se detiene y requiere atención: todavía no permite completar ese paso. Que un ingreso no pida SMS no garantiza que nunca lo solicite.
 
