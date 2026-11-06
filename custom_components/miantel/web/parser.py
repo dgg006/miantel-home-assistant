@@ -9,7 +9,7 @@ from decimal import Decimal, InvalidOperation
 from lxml import etree, html
 
 from .errors import ParseError, SessionExpired
-from .models import Billing, BillingStatus, Service
+from .models import Billing, BillingStatus, DestinationGroup, Service
 
 MONTHS = {
     name: i
@@ -177,6 +177,104 @@ def money(value: str) -> tuple[Decimal, str]:
     return number(match[2]), "USD" if match[1] in ("U$S", "USD") else "UYU"
 
 
+DESTINATION_TITLES = {
+    "destinos gratis para hablar": "free_call_mobile",
+    "destinos gratis para sms": "free_sms",
+    "telefonos fijos para hablar gratis": "free_call_fixed",
+    "amigos con tarifa preferencial": "friend_numbers",
+}
+
+
+def destination_links(root):
+    """Return navigation links only; never read edit/add/delete controls."""
+    if not any(normalize(text(h)) == "destinos gratis y amigos" for h in root.xpath("//h2")):
+        raise ParseError("Destination service list missing")
+    result = {}
+    for card in root.xpath("//*[" + cls("icon-card") + " and " + cls("movil") + "]"):
+        links = [a for a in card.xpath(".//a") if normalize(text(a)) == "configurar destinos"]
+        if len(links) == 1:
+            key = identity(card)
+            if key in result:
+                raise ParseError("Duplicate destination service")
+            result[key] = links[0]
+    return result
+
+
+def parse_destinations(root, service_name: str) -> dict[str, DestinationGroup]:
+    headings = [normalize(text(h)) for h in root.xpath("//h2")]
+    name = normalize(service_name)
+    if not headings or not (
+        headings[0] == name
+        or (headings[0].startswith(name + " ")
+            and re.fullmatch(r"\d{8,9}", headings[0][len(name) + 1:]))
+    ) or "destinos gratis y amigos" not in headings:
+        raise ParseError("Unexpected mobile destination view")
+    result = {}
+    for row in root.xpath("//*[" + cls("free-destination-row") + "]"):
+        headers = row.xpath("./div/h4")
+        if len(headers) != 1:
+            raise ParseError("Unsupported destination category")
+        match = re.fullmatch(r"(.+?)\s+(\d+) de (\d+)", normalize(text(headers[0])))
+        if not match or match[1] not in DESTINATION_TITLES:
+            raise ParseError("Unsupported destination capacity")
+        key = DESTINATION_TITLES[match[1]]
+        numbers = []
+        for info in row.xpath(".//*[" + cls("free-destination-info") + "]"):
+            labels = [text(x) for x in info.xpath("./span")]
+            phones = [re.sub(r"\s+", "", x) for x in labels
+                      if re.fullmatch(r"[\d\s]{8,14}", x)]
+            if len(phones) != 1 or not re.fullmatch(r"\d{8,9}", phones[0]):
+                raise ParseError("Unsupported destination number")
+            numbers.append(phones[0])
+        used, capacity = int(match[2]), int(match[3])
+        if key in result or used != len(numbers) or used > capacity or len(set(numbers)) != used:
+            raise ParseError("Inconsistent destination list")
+        result[key] = DestinationGroup(tuple(numbers), capacity)
+    if not result:
+        raise ParseError("Destination categories missing")
+    return result
+
+
+def prepaid_detail_links(root):
+    """Only follow an explicit instruction about prepaid recharge expiry."""
+    result = {}
+    for card in root.xpath('//*[@id="servicesTodos"]//*[' + cls("servicioBox") + "]"):
+        if "para ver vencimiento de las recargas" not in normalize(text(card)):
+            continue
+        links = [
+            a for a in card.xpath(".//a")
+            if normalize(text(a)) == "ver detalle del consumo"
+        ]
+        if len(links) == 1:
+            result[identity(card)] = links[0]
+    return result
+
+
+def parse_prepaid_expiry(root, today: date, service_name: str) -> date | None:
+    """Read the earliest cash-recharge expiry, scoped to the requested mobile."""
+    headings = [normalize(text(h)) for h in root.xpath("//h2")]
+    name = normalize(service_name)
+    if not headings or not (
+        headings[0] == name
+        or (headings[0].startswith(name + " ")
+            and re.fullmatch(r"\d{8,9}", headings[0][len(name) + 1:]))
+    ) or "detalle de mi consumo" not in headings:
+        raise ParseError("Unexpected mobile consumption view")
+    dates = []
+    for card in root.xpath("//*[" + cls("mini-card-recarga") + "]"):
+        headers = card.xpath(".//*[" + cls("card-header") + "]")
+        if len(headers) != 1:
+            raise ParseError("Unsupported recharge card")
+        labels = headers[0].xpath(".//p")
+        if not labels or normalize(text(labels[0])) != "recarga saldo":
+            continue
+        values = [text(p) for p in labels[1:] if normalize(text(p)).startswith("vence el")]
+        if len(values) != 1 or (value := expiry(values[0], today)) is None:
+            raise ParseError("Unsupported recharge expiry")
+        dates.append(value)
+    return min(dates) if dates else None
+
+
 def parse_billing_card(card, today: date) -> Billing:
     value = normalize(text(card))
     if "no se pudo obtener informaci" in value:
@@ -319,7 +417,18 @@ def partial_document(body: bytes):
     updates = root.xpath('//update[@id="pnlAll"]/text()')
     if not updates:
         raise ParseError("Home update missing")
-    return document(updates[0].encode("utf-8"))
+    document_root = document(updates[0].encode("utf-8"))
+    states = root.xpath('//update[contains(@id,"ViewState")]/text()')
+    if states:
+        for form in document_root.xpath('descendant-or-self::form'):
+            fields = form.xpath('.//input[@name="javax.faces.ViewState"]')
+            if not fields:
+                field = html.Element("input", type="hidden", name="javax.faces.ViewState")
+                form.append(field)
+                fields = [field]
+            for field in fields:
+                field.set("value", states[-1])
+    return document_root
 
 
 def hidden_fields(form) -> dict[str, str]:

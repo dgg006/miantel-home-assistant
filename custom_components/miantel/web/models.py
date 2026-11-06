@@ -29,6 +29,18 @@ class Billing:
 
 
 @dataclass(frozen=True)
+class DestinationGroup:
+    numbers: tuple[str, ...] = field(repr=False)
+    capacity: int
+
+
+@dataclass(frozen=True)
+class Recharge:
+    amount: Decimal = field(repr=False)
+    expires: date
+
+
+@dataclass(frozen=True)
 class Service:
     service_id: str = field(repr=False)
     name: str = field(repr=False)
@@ -39,6 +51,9 @@ class Service:
     allowance_gib: Decimal | None = None
     balance_expiry: date | None = None
     billing: Billing = field(default_factory=Billing)
+    destinations: dict[str, DestinationGroup] | None = field(default=None, repr=False)
+    metrics: dict = field(default_factory=dict, repr=False)
+    recharges: tuple[Recharge, ...] | None = field(default=None, repr=False)
 
 
 @dataclass(frozen=True)

@@ -247,6 +247,144 @@
       },
       "shared_last_date": {
         "name": "Facturación · Fecha de la última factura"
+      },
+      "free_call_mobile": {
+        "name": "Destinos gratis · Celulares"
+      },
+      "free_sms": {
+        "name": "Destinos gratis · SMS"
+      },
+      "free_call_fixed": {
+        "name": "Destinos gratis · Teléfonos fijos"
+      },
+      "friend_numbers": {
+        "name": "Números amigos"
+      },
+      "cycle_start": {
+        "name": "Inicio del ciclo"
+      },
+      "internet_cycle_start": {
+        "name": "Fibra · Inicio del ciclo"
+      },
+      "telephone_cycle_start": {
+        "name": "Teléfono · Inicio del ciclo"
+      },
+      "cycle_end": {
+        "name": "Fin del ciclo"
+      },
+      "internet_cycle_end": {
+        "name": "Fibra · Fin del ciclo"
+      },
+      "telephone_cycle_end": {
+        "name": "Teléfono · Fin del ciclo"
+      },
+      "renewal_date": {
+        "name": "Renovación del cupo"
+      },
+      "internet_renewal_date": {
+        "name": "Fibra · Renovación del cupo"
+      },
+      "telephone_renewal_date": {
+        "name": "Teléfono · Renovación del cupo"
+      },
+      "renewal_days": {
+        "name": "Días para renovar el cupo"
+      },
+      "internet_renewal_days": {
+        "name": "Fibra · Días para renovar el cupo"
+      },
+      "telephone_renewal_days": {
+        "name": "Teléfono · Días para renovar el cupo"
+      },
+      "calls_spent": {
+        "name": "Gasto de recargas · Llamadas"
+      },
+      "internet_calls_spent": {
+        "name": "Fibra · Gasto de recargas · Llamadas"
+      },
+      "telephone_calls_spent": {
+        "name": "Teléfono · Gasto de recargas · Llamadas"
+      },
+      "data_spent": {
+        "name": "Gasto de recargas · Datos"
+      },
+      "internet_data_spent": {
+        "name": "Fibra · Gasto de recargas · Datos"
+      },
+      "telephone_data_spent": {
+        "name": "Teléfono · Gasto de recargas · Datos"
+      },
+      "sms_spent": {
+        "name": "Gasto de recargas · SMS"
+      },
+      "internet_sms_spent": {
+        "name": "Fibra · Gasto de recargas · SMS"
+      },
+      "telephone_sms_spent": {
+        "name": "Teléfono · Gasto de recargas · SMS"
+      },
+      "other_spent": {
+        "name": "Gasto de recargas · Otros"
+      },
+      "internet_other_spent": {
+        "name": "Fibra · Gasto de recargas · Otros"
+      },
+      "telephone_other_spent": {
+        "name": "Teléfono · Gasto de recargas · Otros"
+      },
+      "calls_used_minutes": {
+        "name": "Minutos hablados de recargas"
+      },
+      "internet_calls_used_minutes": {
+        "name": "Fibra · Minutos hablados de recargas"
+      },
+      "telephone_calls_used_minutes": {
+        "name": "Teléfono · Minutos hablados de recargas"
+      },
+      "mobile_data_used_gib": {
+        "name": "Datos usados de recargas"
+      },
+      "internet_mobile_data_used_gib": {
+        "name": "Fibra · Datos usados de recargas"
+      },
+      "telephone_mobile_data_used_gib": {
+        "name": "Teléfono · Datos usados de recargas"
+      },
+      "sms_used_count": {
+        "name": "SMS enviados de recargas"
+      },
+      "internet_sms_used_count": {
+        "name": "Fibra · SMS enviados de recargas"
+      },
+      "telephone_sms_used_count": {
+        "name": "Teléfono · SMS enviados de recargas"
+      },
+      "download_mbps": {
+        "name": "Velocidad contratada de bajada"
+      },
+      "internet_download_mbps": {
+        "name": "Fibra · Velocidad contratada de bajada"
+      },
+      "telephone_download_mbps": {
+        "name": "Teléfono · Velocidad contratada de bajada"
+      },
+      "upload_mbps": {
+        "name": "Velocidad contratada de subida"
+      },
+      "internet_upload_mbps": {
+        "name": "Fibra · Velocidad contratada de subida"
+      },
+      "telephone_upload_mbps": {
+        "name": "Teléfono · Velocidad contratada de subida"
+      },
+      "recharge_count": {
+        "name": "Recargas de saldo vigentes"
+      },
+      "internet_recharge_count": {
+        "name": "Fibra · Recargas de saldo vigentes"
+      },
+      "telephone_recharge_count": {
+        "name": "Teléfono · Recargas de saldo vigentes"
       }
     },
     "binary_sensor": {
@@ -273,6 +411,13 @@
       },
       "shared_overdue": {
         "name": "Facturación · Facturas vencidas"
+      },
+      "roaming_enabled": {
+        "name": "Roaming habilitado",
+        "state": {
+          "on": "Habilitado",
+          "off": "Deshabilitado"
+        }
       }
     }
   }

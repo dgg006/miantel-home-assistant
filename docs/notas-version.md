@@ -1,23 +1,32 @@
-# MiAntel para Home Assistant · Antel Uruguay
+# MiAntel 0.2.0 · Antel Uruguay
 
-Versión estable 0.1.1 de MiAntel para Antel Uruguay. Estrena un ícono propio con mapa de Uruguay, servicios conectados y nodo amarillo, disponible en resolución normal y alta. Atiende la recomendación del revisor de HACS de reemplazar el recurso de la aplicación oficial. No cambia el funcionamiento, la configuración ni las entidades.
+Actualización estable con nuevas consultas de solo lectura para los servicios de Antel Uruguay. Disponible desde el catálogo del Marketplace de Home Assistant y HACS.
 
-## Funciones incluidas
+## Novedades
 
-- Consulta de saldos, consumos de datos y facturación según la información disponible en MiAntel.
-- Selección de servicios y frecuencia de actualización desde las opciones.
-- Agrupación reversible de fibra y teléfono fijo en un mismo dispositivo.
-- Modalidad de factura compartida mediante elección del servicio de consulta, sin sumar importes duplicados.
-- Ícono propio de la integración comunitaria, compatibilidad con español latinoamericano y diagnósticos sin datos de cuenta.
+- **Destinos gratis y números amigos:** cantidad configurada por categoría; números, capacidad y lugares libres en los atributos de cada entidad. Incluye llamadas a celulares, SMS, llamadas a fijos y amigos con tarifa preferencial.
+- **Recargas vigentes:** cantidad y detalle de saldo y vencimiento individual. Se corrige el vencimiento de los prepagos que lo muestran únicamente en el detalle del consumo; se toma la fecha más próxima.
+- **Consumo de recargas:** gasto en llamadas, datos, SMS y otros, junto con minutos hablados, datos utilizados y SMS enviados cuando la web los informa.
+- **Ciclo de consumo:** fechas de inicio y fin, próxima renovación del cupo y días restantes, con validación de las fechas.
+- **Fibra:** velocidades contratadas de bajada y subida del plan actual, en Mbit/s. Son datos del contrato, no una medición de velocidad.
+- **Roaming:** indicador de habilitado o deshabilitado, sin interruptor ni acciones para cambiarlo.
 
-## Instalación
+## Correcciones
 
-Buscar **MiAntel** directamente en HACS: la integración ya fue incorporada al catálogo. El botón de repositorio personalizado sigue disponible como alternativa en la documentación. Descargar la integración y reiniciar Home Assistant. Luego agregar MiAntel desde Dispositivos y servicios e ingresar las credenciales de TuID en la propia instalación. Si ya estaba configurada, actualizar y reiniciar; se conservan la configuración y las entidades.
+Se actualiza el estado interno necesario para navegar entre las pantallas de MiAntel. La preparación de certificados de conexión se realiza en segundo plano para evitar bloquear el arranque de Home Assistant.
 
-Requiere Home Assistant 2026.10 o posterior. También se incluye un archivo ZIP para instalación manual.
+Si una consulta complementaria falla, no se inventan ceros ni se borran las otras lecturas válidas. Las consultas se limitan a los servicios seleccionados; las velocidades contratadas se conservan en memoria hasta 24 horas.
 
-## Validación y límites
+## Actualizar o instalar
 
-Se verificaron instalación, lecturas y pantallas de configuración en Home Assistant 2026.10.1. Se informó aproximadamente tres semanas de uso sin problemas en una instalación y se ejecutaron 85 pruebas automáticas con datos ficticios. Las pruebas con más cuentas siguen pendientes. Si TuID solicita un código adicional, esta versión no permite completarlo. Los cambios de formato de MiAntel pueden requerir ajustes.
+Buscá **MiAntel (Antel Uruguay)** en el Marketplace de Home Assistant o HACS, descargá **0.2.0** y reiniciá Home Assistant. Se conservan la cuenta, las opciones y los identificadores de las entidades existentes. Las entidades nuevas aparecen según los datos disponibles en cada servicio y se pueden ocultar o deshabilitar.
 
-Proyecto independiente, sin afiliación con Antel. No realiza pagos, recargas ni modificaciones de servicios.
+Los números de destinos y el detalle de recargas se consultan abriendo los atributos de sus entidades. No se incluyen controles para modificar destinos, roaming, planes o servicios.
+
+Requiere Home Assistant 2026.10 o posterior. También se incluyen archivos ZIP para instalación manual y código fuente.
+
+## Validación y alcance
+
+149 pruebas automáticas con datos ficticios y lecturas contrastadas con MiAntel web en Home Assistant 2026.11. Los minutos consumidos no equivalen a minutos incluidos o restantes; el desglose de recargas no representa necesariamente bonos o paquetes independientes. Las modalidades sin información reconocida no se presentan como verificadas. No se agregan reclamos.
+
+Los diagnósticos excluyen credenciales, cookies, cuentas, números de servicios, destinos e importes. Los ejemplos públicos usan datos ficticios. Proyecto comunitario independiente, sin afiliación con Antel.

@@ -4,7 +4,7 @@
 
 Integración comunitaria para consultar en **Home Assistant los servicios de Antel Uruguay** mediante MiAntel: saldos de líneas móviles, consumo de internet e información de facturación, según los datos disponibles en cada servicio. Toda la interfaz está en español, incluido español latinoamericano.
 
-**Versión estable 0.1.1.** Es un proyecto independiente, sin afiliación con Antel. Solo consulta información: no realiza pagos, recargas ni cambios de servicios.
+**Versión estable 0.2.0.** Es un proyecto independiente, sin afiliación con Antel. Solo consulta información: no realiza pagos, recargas ni cambios de servicios.
 
 <!-- HACS:BEGIN -->
 [![Agregar repositorio a HACS](docs/agregar-a-hacs.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=dgg006&repository=miantel-home-assistant&category=integration)
@@ -16,6 +16,12 @@ Integración comunitaria para consultar en **Home Assistant los servicios de Ant
 | --- | --- |
 | Saldo móvil | Saldo disponible y vencimiento, cuando MiAntel los informa. |
 | Datos de internet | Consumo, datos incluidos y nombre del plan. |
+| Recargas de saldo | Cantidad vigente y detalle del saldo y vencimiento de cada recarga. |
+| Consumo de recargas | Gasto en llamadas, datos, SMS y otros; minutos hablados, datos usados y SMS enviados, según la web. |
+| Ciclo de consumo | Inicio, fin, próxima renovación del cupo y días restantes, cuando se pueden verificar. |
+| Velocidad contratada | Bajada y subida de fibra correspondientes al plan actual. No es una prueba de velocidad. |
+| Roaming | Indicador de habilitado o deshabilitado, sin control para modificarlo. |
+| Destinos y amigos | Celulares y fijos para llamadas gratis, SMS gratis y números amigos con tarifa preferencial. |
 | Facturación | Estado de facturación, cantidad e importe pendiente y próximo vencimiento, cuando el formato permite leerlos. |
 | Avisos | Indicadores de facturas pendientes y vencidas. |
 | Última factura | Importe y fecha de emisión; consulta opcional, desactivada inicialmente. |
@@ -26,13 +32,13 @@ La última factura emitida **no equivale a deuda pendiente**. Si una consulta fa
 
 - Cuenta de TuID con acceso a [MiAntel web](https://aplicaciones.antel.com.uy/miAntel/) y sus servicios asociados.
 - Home Assistant **2026.10 o posterior**, con conexión a internet.
-- [HACS instalado](https://www.hacs.xyz/docs/use/) para usar la instalación recomendada.
+- Marketplace de Home Assistant o [HACS instalado](https://www.hacs.xyz/docs/use/) para usar la instalación recomendada.
 
 No necesitás un emulador, el APK de MiAntel ni un token de Home Assistant para configurar esta integración.
 
-## Instalar desde HACS
+## Instalar desde el Marketplace o HACS
 
-Buscá **MiAntel** en HACS. Si aparece en el catálogo, abrí **MiAntel (Antel Uruguay)**, descargá la integración y reiniciá Home Assistant. Después seguí desde el paso 4 de abajo.
+Buscá **MiAntel** en el Marketplace de Home Assistant o en HACS. Abrí **MiAntel (Antel Uruguay)**, instalá la integración y reiniciá Home Assistant. Después seguí desde el paso 4 de abajo.
 
 MiAntel fue incorporada al catálogo de HACS el 5 de noviembre de 2026. Si tu instancia todavía no la muestra, también podés usar el repositorio personalizado:
 
@@ -68,6 +74,18 @@ Cada servicio aparece como un dispositivo, con las entidades correspondientes a 
 
 La actualización es cada **60 minutos** de forma predeterminada; se puede ajustar entre 15 minutos y 24 horas. Consultar el histórico agrega solicitudes, por eso está desactivado inicialmente. Un servicio que desaparece de la cuenta queda no disponible.
 
+### Recargas, destinos y consultas complementarias
+
+**Recargas de saldo vigentes** muestra la cantidad. Al abrir los atributos de la entidad, `recargas` contiene el saldo y el vencimiento de cada una. **Vencimiento del saldo** muestra la fecha más próxima, incluyendo los prepagos que solo la muestran en el detalle del consumo de MiAntel.
+
+Las cuatro categorías de **Destinos gratis** y **Números amigos** muestran la cantidad configurada. Sus atributos incluyen `numeros`, `capacidad` y `lugares_disponibles`. Son únicamente informativos: no se agregan, editan ni eliminan números desde la integración.
+
+El desglose de gasto y consumo corresponde a las recargas de saldo del período mostrado por MiAntel; no representa necesariamente el consumo de regalos, bonos o paquetes independientes. No se crean lecturas ficticias para modalidades sin datos reconocidos. Los minutos consumidos no equivalen a minutos incluidos o restantes del plan.
+
+Las fechas del ciclo y de renovación se contrastan con los días restantes que informa la web. Las velocidades son las contratadas, en Mbit/s, y se conservan en memoria hasta 24 horas para evitar consultar repetidamente el catálogo de planes. El estado de roaming indica su habilitación, no si el equipo está conectado en el extranjero.
+
+Estas lecturas complementarias consultan únicamente los servicios seleccionados y pueden hacer que la primera actualización tarde más. Las entidades nuevas se crean según la información disponible; se pueden ocultar o deshabilitar desde Home Assistant. No hace falta volver a configurar una cuenta existente al actualizar.
+
 ## Agrupar fibra y teléfono fijo
 
 1. Abrí las opciones de MiAntel y marcá **Agrupar fibra y teléfono**.
@@ -100,7 +118,7 @@ El componente no registra credenciales, cookies ni páginas completas. Sus diagn
 
 HACS permite descargar las actualizaciones cuando estén disponibles. Después de actualizar, reiniciá Home Assistant. Las versiones experimentales se identifican como beta.
 
-- Se comprobaron la instalación y las lecturas en Home Assistant 2026.10.1, los nombres en español y las pantallas de configuración de agrupaciones y factura compartida. Al publicar la versión estable, se informó aproximadamente tres semanas de uso sin problemas en una instalación. La validación con más cuentas sigue pendiente.
+- Se comprobaron las lecturas complementarias en Home Assistant 2026.11, contrastándolas con MiAntel web y conservando las entidades y opciones anteriores. Las agrupaciones y factura compartida también se verificaron en Home Assistant 2026.10.1. La validación con más cuentas y modalidades de contrato sigue pendiente.
 - Las páginas internas de MiAntel pueden cambiar sin aviso. Los formatos desconocidos se informan como desconocidos o no disponibles.
 - Las facturas pendientes y vencidas tienen cobertura de pruebas con ejemplos ficticios; hace falta validar más formatos reales.
 - En los formatos investigados, los tamaños que el sitio etiqueta como GB usan una convención binaria; las entidades usan GiB. Esta equivalencia debe revisarse ante servicios o formatos nuevos.

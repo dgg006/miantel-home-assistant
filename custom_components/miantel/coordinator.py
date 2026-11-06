@@ -18,12 +18,15 @@ LOGGER = logging.getLogger(__name__)
 
 class MiAntelCoordinator(DataUpdateCoordinator[Snapshot]):
     def __init__(self, hass, entry):
+        self.selected = set(entry.options.get(CONF_SERVICES, entry.data.get(CONF_SERVICES, [])))
         self.client = MiAntelClient(
             entry.data[CONF_USERNAME],
             entry.data[CONF_PASSWORD],
             include_history=entry.options.get(CONF_HISTORY, False),
+            include_destinations=True,
+            include_details=True,
+            destination_services=self.selected,
         )
-        self.selected = set(entry.options.get(CONF_SERVICES, entry.data.get(CONF_SERVICES, [])))
         self.groups = load_groups(entry.options.get(CONF_GROUPS, []))
         super().__init__(
             hass,

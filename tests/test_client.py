@@ -224,3 +224,42 @@ def test_removed_service_is_not_reused_from_old_data():
     client = MiAntelClient("demo-user", "demo-password", transport=transport)
     assert client.fetch().services
     assert client.fetch().services == {}
+
+
+def test_tls_setup_runs_in_request_worker_not_home_assistant_event_loop(monkeypatch):
+    import asyncio
+
+    events = []
+
+    class Response:
+        url = HOME
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+        def read(self, limit):
+            return b"<html></html>"
+
+    class Opener:
+        def open(self, request, timeout):
+            return Response()
+
+    def create_opener(*handlers):
+        with pytest.raises(RuntimeError):
+            asyncio.get_running_loop()
+        events.append("tls-created-in-worker")
+        return Opener()
+
+    monkeypatch.setattr("web.client.build_opener", create_opener)
+
+    async def check():
+        transport = HttpTransport()
+        assert not events
+        await asyncio.to_thread(transport.request, HOME)
+        await asyncio.to_thread(transport.request, HOME)
+        assert events == ["tls-created-in-worker"]
+
+    asyncio.run(check())

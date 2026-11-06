@@ -18,6 +18,26 @@ BILLING_KEYS = frozenset(
 )
 
 SPANISH_NAMES = {
+    "cycle_start": "Inicio del ciclo",
+    "cycle_end": "Fin del ciclo",
+    "renewal_date": "Renovación del cupo",
+    "renewal_days": "Días para renovar el cupo",
+    "calls_spent": "Gasto de recargas · Llamadas",
+    "data_spent": "Gasto de recargas · Datos",
+    "sms_spent": "Gasto de recargas · SMS",
+    "other_spent": "Gasto de recargas · Otros",
+    "calls_used_minutes": "Minutos hablados de recargas",
+    "mobile_data_used_gib": "Datos usados de recargas",
+    "sms_used_count": "SMS enviados de recargas",
+    "download_mbps": "Velocidad contratada de bajada",
+    "upload_mbps": "Velocidad contratada de subida",
+    "recharge_count": "Recargas de saldo vigentes",
+    "roaming_enabled": "Roaming habilitado",
+
+    "free_call_mobile": "Destinos gratis · Celulares",
+    "free_sms": "Destinos gratis · SMS",
+    "free_call_fixed": "Destinos gratis · Teléfonos fijos",
+    "friend_numbers": "Números amigos",
     "balance": "Saldo",
     "usage_gib": "Consumo de datos",
     "allowance_gib": "Datos incluidos",

@@ -4,6 +4,7 @@ import threading
 from dataclasses import dataclass, replace
 from datetime import datetime
 from http.cookiejar import CookieJar
+from time import monotonic
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode, urljoin, urlsplit
 from urllib.request import (
@@ -15,7 +16,7 @@ from urllib.request import (
 )
 from zoneinfo import ZoneInfo
 
-from . import parser
+from . import details, parser
 from .errors import (
     AdditionalAuthenticationRequired,
     AuthenticationError,
@@ -28,6 +29,7 @@ from .models import Billing, BillingStatus, Snapshot
 
 HOME = "https://aplicaciones.antel.com.uy/miAntel/"
 BILLS = HOME + "app/facturacion/facturas.jsf"
+DESTINATIONS = HOME + "app/destinos-gratis-y-amigos/destinos.jsf"
 ALLOWED_HOSTS = {"aplicaciones.antel.com.uy", "eidas.tuid.uy"}
 MAX_BODY_BYTES = 8 * 1024 * 1024
 LOCAL_ZONE = ZoneInfo("America/Montevideo")
@@ -63,9 +65,9 @@ class HttpTransport:
     def __init__(self, timeout: int = 60):
         self.timeout = timeout
         self.cookies = CookieJar()
-        self.opener = build_opener(
-            ProxyHandler({}), RestrictedRedirect(), HTTPCookieProcessor(self.cookies)
-        )
+        # Loading system TLS certificates can read disk. Defer it to request(),
+        # which Home Assistant calls in its executor, rather than coordinator setup.
+        self.opener = None
 
     def clear(self):
         self.cookies.clear()
@@ -80,6 +82,10 @@ class HttpTransport:
         if ajax:
             headers.update({"Faces-Request": "partial/ajax", "X-Requested-With": "XMLHttpRequest"})
         try:
+            if self.opener is None:
+                self.opener = build_opener(
+                    ProxyHandler({}), RestrictedRedirect(), HTTPCookieProcessor(self.cookies)
+                )
             with self.opener.open(
                 Request(url, data=data, headers=headers), timeout=self.timeout
             ) as response:
@@ -104,11 +110,17 @@ class MiAntelClient:
     """Serialized, read-only queries; no credentials or HTML are logged."""
 
     def __init__(
-        self, username: str, password: str, *, include_history: bool = False, transport=None
+        self, username: str, password: str, *, include_history: bool = False, transport=None,
+        include_destinations: bool = False, destination_services=None,
+        include_details: bool = False,
     ):
         self._username = username.strip()
         self._password = password
         self.include_history = include_history
+        self.include_destinations = include_destinations
+        self.destination_services = set(destination_services) if destination_services else None
+        self.include_details = include_details
+        self._speed_cache = {}
         self._transport = transport or HttpTransport()
         self._lock = threading.RLock()
 
@@ -211,15 +223,42 @@ class MiAntelClient:
             raise SessionExpired("Web session expired")
         return root
 
-    def _fetch_once(self) -> Snapshot:
-        now = datetime.now(LOCAL_ZONE)
+    def _services_page(self):
         root = self._read_page(HOME)
         if not root.xpath('//*[@id="servicesTodos"]'):
             fields = parser.bootstrap(root)
             if fields is None:
                 raise ParseError("Unsupported service loading view")
             root = self._read_page(HOME, fields, ajax=True)
+        return root
+
+    def _fetch_once(self) -> Snapshot:
+        now = datetime.now(LOCAL_ZONE)
+        root = self._services_page()
         services = parser.parse_services(root, now.date())
+        if self.include_details:
+            self._read_consumption(services, root, now.date())
+        detail_ids = [
+            key for key in parser.prepaid_detail_links(root)
+            if not self.include_details and key in services and services[key].kind == "acm"
+            and services[key].balance is not None and services[key].balance_expiry is None
+        ]
+        for index, key in enumerate(detail_ids):
+            try:
+                # Navigation changes the JSF view; obtain fresh commands for each mobile.
+                if index:
+                    root = self._services_page()
+                link = parser.prepaid_detail_links(root).get(key)
+                if link is None:
+                    continue
+                action, fields = parser.link_submission(root, link)
+                detail = self._read_page(urljoin(HOME, action), fields)
+                value = parser.parse_prepaid_expiry(detail, now.date(), services[key].name)
+                services[key] = replace(services[key], balance_expiry=value)
+            except RateLimited:
+                raise
+            except (ParseError, ConnectionError):
+                pass  # Preserve independently valid balances and other services.
         billing_available = True
         try:
             bills_root = self._read_page(BILLS)
@@ -266,7 +305,106 @@ class MiAntelClient:
                 key: replace(service, billing=Billing(status=BillingStatus.UNAVAILABLE))
                 for key, service in services.items()
             }
+        if self.include_destinations:
+            self._read_destinations(services)
+        if self.include_details:
+            self._read_extra_views(services)
         return Snapshot(services=services, updated_at=now, billing_available=billing_available)
+
+    def _detail_selected(self, key):
+        return self.destination_services is None or key in self.destination_services
+
+    def _navigate_service(self, key, labels, root=None):
+        if root is None:
+            root = self._services_page()
+        cards = [card for card in root.xpath('//*[@id="servicesTodos"]//*['
+                                            + parser.cls("servicioBox") + "]")
+                 if parser.identity(card) == key]
+        if len(cards) != 1:
+            raise ParseError("Service navigation missing")
+        for label in labels:
+            links = [a for a in cards[0].xpath(".//a")
+                     if parser.normalize(parser.text(a)) == label]
+            if links:
+                action, fields = parser.link_submission(root, links[0])
+                return self._read_page(urljoin(HOME, action), fields)
+        raise ParseError("Read-only service navigation missing")
+
+    def _read_consumption(self, services, root, today):
+        ids = [key for key, s in services.items()
+               if s.kind in ("acm", "tinco") and self._detail_selected(key)]
+        for index, key in enumerate(ids):
+            try:
+                service = services[key]
+                view = self._navigate_service(
+                    key, ("ver detalle del consumo", "detalle de consumo"),
+                    root if not index else None,
+                )
+                metrics, recharges = details.consumption(
+                    view, service.name, today, mobile=service.kind == "acm"
+                )
+                expiry = service.balance_expiry
+                if recharges:
+                    expiry = min(r.expires for r in recharges)
+                services[key] = replace(service, metrics=metrics, recharges=recharges,
+                                        balance_expiry=expiry)
+            except RateLimited:
+                raise
+            except (ConnectionError, ParseError):
+                pass
+
+    def _read_extra_views(self, services):
+        for key, service in list(services.items()):
+            if not self._detail_selected(key):
+                continue
+            try:
+                if service.kind == "acm":
+                    view = self._navigate_service(key, ("roaming",))
+                    metrics = {"roaming_enabled": details.roaming(view, service.name)}
+                elif service.kind == "tinco":
+                    cached = self._speed_cache.get(key)
+                    if cached and cached[1] == service.plan and monotonic() - cached[0] < 86400:
+                        metrics = cached[2]
+                    else:
+                        # Open the initial plan overview only. No offer is selected or submitted.
+                        view = self._navigate_service(key, ("cambiar plan",))
+                        metrics = details.plan_speed(view)
+                        self._speed_cache[key] = monotonic(), service.plan, metrics
+                else:
+                    continue
+                services[key] = replace(service, metrics={**service.metrics, **metrics})
+            except RateLimited:
+                raise
+            except (ConnectionError, ParseError):
+                pass
+
+    def _read_destinations(self, services):
+        """Read only the list view; never submit destination management forms."""
+        try:
+            root = self._read_page(DESTINATIONS)
+            ids = [key for key in parser.destination_links(root)
+                   if key in services and services[key].kind == "acm"
+                   and (self.destination_services is None or key in self.destination_services)]
+        except RateLimited:
+            raise
+        except (ConnectionError, ParseError):
+            return
+        for index, key in enumerate(ids):
+            try:
+                if index:
+                    root = self._read_page(DESTINATIONS)
+                link = parser.destination_links(root).get(key)
+                if link is None:
+                    continue
+                action, fields = parser.link_submission(root, link)
+                # Whitelist the navigation command and hidden JSF state only.
+                detail = self._read_page(urljoin(DESTINATIONS, action), fields)
+                groups = parser.parse_destinations(detail, services[key].name)
+                services[key] = replace(services[key], destinations=groups)
+            except RateLimited:
+                raise
+            except (ConnectionError, ParseError):
+                pass
 
     def fetch(self) -> Snapshot:
         with self._lock:
@@ -282,3 +420,4 @@ class MiAntelClient:
     def close(self):
         with self._lock:
             self._transport.clear()
+            self._speed_cache.clear()
